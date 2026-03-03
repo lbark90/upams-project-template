@@ -42,8 +42,16 @@ mcp__upams__semantic_search(query="<topic>", collection="all")
 - **Stack**: [e.g. Express + React + Vite + TypeScript]
 - **UPAMS pipeline**: Issues labeled `upams` → Claude/Copilot writes fix → Copilot reviews → Gemini approves → auto-merge
 
+## Branch Strategy
+
+- `main` — **production branch**. Deploys to Cloud Run on every merge. Never push directly.
+- All other branches — development. Push to a branch, a PR is auto-opened, reviewed, and merged into `main`.
+- `v-1`, `develop`, `feature/*` etc. — dev branches. PRs from these auto-target `main`.
+- Agent branches (`claude/*`, `copilot/*`) — created automatically by Claude/Copilot agents. Do not push to these manually.
+
 ## Key Rules
 
 - Always check MCP for prior context before reading files you haven't touched this session
 - Always save non-obvious decisions to MCP so the next session doesn't repeat the reasoning
 - Keep notes specific and actionable
+- **Never commit directly to `main`** — always go through a PR
