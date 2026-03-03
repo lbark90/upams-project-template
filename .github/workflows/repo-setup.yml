@@ -1,0 +1,39 @@
+name: UPAMS Repo Setup (runs once)
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    # Only run if this is the very first push (no prior commits on main)
+    if: github.event.before == '0000000000000000000000000000000000000000'
+    permissions:
+      contents: read
+    steps:
+      - name: Configure workflow permissions
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // 1. Set default workflow permissions to read/write
+            await github.request("PUT /repos/{owner}/{repo}/actions/permissions/workflow", {
+              owner, repo,
+              default_workflow_permissions: "write",
+              can_approve_pull_request_reviews: true,
+            });
+            console.log("Set default workflow permissions to write");
+
+            // 2. Disable fork PR approval requirement
+            await github.request("PUT /repos/{owner}/{repo}/actions/permissions", {
+              owner, repo,
+              enabled: true,
+              allowed_actions: "all",
+            });
+            console.log("Disabled fork PR workflow approval");
+
+            console.log("UPAMS repo setup complete.");
