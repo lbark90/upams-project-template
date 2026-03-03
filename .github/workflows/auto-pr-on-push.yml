@@ -1,0 +1,50 @@
+name: Auto-open PR on push
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - 'copilot/**'
+
+jobs:
+  open-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Open PR if none exists
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const branch = context.ref.replace('refs/heads/', '');
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const { data: existing } = await github.rest.pulls.list({
+              owner, repo,
+              head: `${owner}:${branch}`,
+              state: 'open',
+            });
+
+            if (existing.length > 0) {
+              console.log(`PR already exists for ${branch}: #${existing[0].number}`);
+              return;
+            }
+
+            const { data: commit } = await github.rest.repos.getCommit({
+              owner, repo, ref: context.sha,
+            });
+            const title = commit.commit.message.split('\n')[0].slice(0, 72);
+
+            const { data: pr } = await github.rest.pulls.create({
+              owner, repo,
+              title,
+              head: branch,
+              base: 'main',
+              body: `Auto-opened by UPAMS on push to \`${branch}\`.\n\nCopilot will review this PR automatically.`,
+              draft: false,
+            });
+
+            console.log(`Opened PR #${pr.number}: ${pr.html_url}`);
