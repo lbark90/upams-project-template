@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "upams": {
+      "command": "/Users/larrybark/PROJECTS/ai-com/.venv/bin/python",
+      "args": ["/Users/larrybark/PROJECTS/ai-com/cloud-mcp-server/mcp_bridge.py"],
+      "autoApprove": [
+        "get_project_status", "semantic_search", "navigate_project",
+        "find_related_context", "add_note", "add_decision", "add_milestone",
+        "manage_tasks", "check_token_budget", "initiate_handoff",
+        "ingest_document", "clear_collection", "cleanup_tasks"
+      ],
+      "env": {
+        "PROJECT_STATE_CLOUD_URL": "https://project-state-mcp-909370118404.us-central1.run.app",
+        "PROJECT_STATE_PROJECT_ID": "<project-id>",
+        "MCP_API_TOKEN": "5yW2AB4S74BxOH_rVbP5nZT-ROL5pbE298AuAGO6KPE",
+        "GOOGLE_APPLICATION_CREDENTIALS": "/Users/larrybark/.config/mcp-invoker-key.json"
+      }
+    }
+  }
+}
