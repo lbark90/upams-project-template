@@ -4,7 +4,7 @@ on:
   push:
     branches-ignore:
       - main
-      - 'copilot/**'
+      - 'copilot/**'   # Copilot fix branches handle their own PRs
 
 jobs:
   open-pr:
@@ -22,6 +22,7 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
+            // Check if a PR already exists for this branch
             const { data: existing } = await github.rest.pulls.list({
               owner, repo,
               head: `${owner}:${branch}`,
@@ -33,17 +34,21 @@ jobs:
               return;
             }
 
+            // Get the latest commit message for the PR title
             const { data: commit } = await github.rest.repos.getCommit({
               owner, repo, ref: context.sha,
             });
-            const title = commit.commit.message.split('\n')[0].slice(0, 72);
+            const title = commit.commit.message.split('
+')[0].slice(0, 72);
 
             const { data: pr } = await github.rest.pulls.create({
               owner, repo,
               title,
               head: branch,
               base: 'main',
-              body: `Auto-opened by UPAMS on push to \`${branch}\`.\n\nCopilot will review this PR automatically.`,
+              body: `Auto-opened by UPAMS on push to \.
+
+Copilot will review this PR automatically.`,
               draft: false,
             });
 
