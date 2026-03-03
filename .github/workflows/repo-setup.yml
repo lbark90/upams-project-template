@@ -12,7 +12,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: Configure workflow permissions
+      - name: Configure repo and workflow permissions
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -35,5 +35,12 @@ jobs:
               allowed_actions: "all",
             });
             console.log("Disabled fork PR workflow approval");
+
+            // 3. Enable auto-merge (required for Dependabot auto-merge workflow)
+            await github.request("PATCH /repos/{owner}/{repo}", {
+              owner, repo,
+              allow_auto_merge: true,
+            });
+            console.log("Enabled allow_auto_merge");
 
             console.log("UPAMS repo setup complete.");
